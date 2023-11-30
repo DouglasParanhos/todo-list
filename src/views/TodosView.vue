@@ -4,16 +4,19 @@
     <TodoCreator @create-todo="createTodo">
       <template #button-content>Create</template>
     </TodoCreator>
-    <ul class="todo-list" v-if="todoList.length > 0">
-      <TodoItem
-        v-for="(todo, index) in todoList"
-        :todo="todo"
-        :index="index"
-        @edit-todo="toggleEditTodo"
-        @update-todo="updateTodo"
-        @toggle-complete="toggleTodoComplete"
-        @delete-todo="deleteTodo"
-      />
+    <draggable v-if="todoList.length > 0" v-model="todoList" :item-key="uid()" :animation="300" tag="ul" class="todo-list"> 
+      <template #item="{ element: todo }">
+        <TodoItem
+          :todo="todo"
+          @edit-todo="toggleEditTodo"
+          @update-todo="updateTodo"
+          @toggle-complete="toggleTodoComplete"
+          @delete-todo="deleteTodo"
+        />
+      </template>
+    </draggable>
+    <ul v-if="todoList.length > 0" class="todo-list">
+        
     </ul>
     <p v-else class="todos-msg">
       <Icon icon="noto-v1:sad-but-relieved-face" />
@@ -29,7 +32,8 @@
 <script setup>
 import { Icon } from "@iconify/vue";
 import { uid } from "uid";
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
+import draggable from 'vuedraggable';
 import TodoCreator from "../components/TodoCreator.vue";
 import TodoItem from "../components/TodoItem.vue";
 
@@ -60,30 +64,35 @@ const createTodo = (todo) => {
     isCompleted: false,
     isEditing: null,
   });
-  setTodoListLocalStorage();
 };
 
-const toggleEditTodo = (todoPos) => {
-  todoList.value[todoPos].isEditing = !todoList.value[todoPos].isEditing;
-  setTodoListLocalStorage();
+const toggleEditTodo = (todo) => {
+  const todoEdited = todoList.value.filter((t) => t.id === todo.id)[0]
+  
+  todoEdited.isEditing = !todoEdited.isEditing;
 };
 
-const updateTodo = (todoVal, todoPos) => {
-  todoList.value[todoPos].todo = todoVal;
-  setTodoListLocalStorage();
+const updateTodo = (todoVal, todo) => {
+  const todoUpdated = todoList.value.filter((t) => t.id === todo.id)[0]
+  todoUpdated.todo = todoVal
 };
 
-const toggleTodoComplete = (todoPos) => {
-  todoList.value[todoPos].isCompleted = !todoList.value[todoPos].isCompleted;
-  setTodoListLocalStorage();
+const toggleTodoComplete = (todo) => {
+  const todoCompleted = todoList.value.filter((t) => t.id === todo.id)[0]
+  todoCompleted.isCompleted = !todoCompleted.isCompleted;
 };
 
 const deleteTodo = (todo) => {
   todoList.value = todoList.value.filter(
     (todoFilter) => todoFilter.id !== todo.id
   );
-  setTodoListLocalStorage();
 };
+
+watch(todoList, () => {
+    setTodoListLocalStorage();
+  }, 
+  { deep: true }
+  )
 </script>
 
 <style scoped lang="scss">

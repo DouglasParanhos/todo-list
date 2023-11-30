@@ -3,14 +3,14 @@
       <input
         type="checkbox"
         :checked="todo.isCompleted"
-        @input="$emit('toggle-complete', index)"
+        @input="$emit('toggle-complete', todo)"
       />
       <div class="todo">
         <input
           v-if="todo.isEditing"
           type="text"
           :value="todo.todo"
-          @input="$emit('update-todo', $event.target.value, index)"
+          @input="$emit('update-todo', $event.target.value, todo)"
         />
         <span
           v-else
@@ -28,7 +28,7 @@
           class="icon check-icon"
           color="41b080"
           width="22"
-          @click="$emit('edit-todo', index)"
+          @click="$emit('edit-todo', todo)"
         />
         <Icon
           v-else
@@ -36,7 +36,7 @@
           class="icon edit-icon"
           color="41b080"
           width="22"
-          @click="$emit('edit-todo', index)"
+          @click="$emit('edit-todo', todo)"
         />
         <Icon
           icon="ph:trash"
@@ -55,10 +55,6 @@ const props = defineProps({
   todo: {
     type: Object,
     default: () => {},
-  },
-  index: {
-    type: Number,
-    default: 0,
   },
 });
 
