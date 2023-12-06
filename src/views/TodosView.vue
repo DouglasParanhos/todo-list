@@ -47,6 +47,7 @@ const fetchTodoList = () => {
   const savedTodoList = JSON.parse(localStorage.getItem("todoList"));
   if (savedTodoList) {
     todoList.value = savedTodoList;
+    todoList.value.map(todo => todo.isEditing = false)
   }
 };
 
